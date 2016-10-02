@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>5</daysToKeep>
+        <numToKeep>-1</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <hudson.triggers.TimerTrigger>
+      <spec>H/5 * * * *</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cd /opt/jmeter
+if [ -e ExpediaInt.jtl ]
+  then
+	rm ExpediaInt.jtl
+fi
+bin/jmeter.sh -n -t testplans/ExpediaInt.jmx -l ExpediaInt.jtl</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.performance.PerformancePublisher plugin="performance@1.14">
+      <errorFailedThreshold>0</errorFailedThreshold>
+      <errorUnstableThreshold>0</errorUnstableThreshold>
+      <errorUnstableResponseTimeThreshold></errorUnstableResponseTimeThreshold>
+      <relativeFailedThresholdPositive>0.0</relativeFailedThresholdPositive>
+      <relativeFailedThresholdNegative>0.0</relativeFailedThresholdNegative>
+      <relativeUnstableThresholdPositive>0.0</relativeUnstableThresholdPositive>
+      <relativeUnstableThresholdNegative>0.0</relativeUnstableThresholdNegative>
+      <nthBuildNumber>0</nthBuildNumber>
+      <modeRelativeThresholds>false</modeRelativeThresholds>
+      <configType>ART</configType>
+      <modeOfThreshold>false</modeOfThreshold>
+      <failBuildIfNoResultFile>false</failBuildIfNoResultFile>
+      <compareBuildPrevious>false</compareBuildPrevious>
+      <xml></xml>
+      <modePerformancePerTestCase>true</modePerformancePerTestCase>
+      <parsers>
+        <hudson.plugins.performance.JMeterCsvParser>
+          <glob>/opt/jmeter/ExpediaInt.jtl</glob>
+          <skipFirstLine>true</skipFirstLine>
+          <delimiter>,</delimiter>
+          <timestampIdx>0</timestampIdx>
+          <elapsedIdx>1</elapsedIdx>
+          <responseCodeIdx>3</responseCodeIdx>
+          <successIdx>7</successIdx>
+          <urlIdx>2</urlIdx>
+          <pattern>timeStamp,elapsed,URL,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,grpThreads,allThreads,Latency,IdleTime</pattern>
+        </hudson.plugins.performance.JMeterCsvParser>
+      </parsers>
+      <modeThroughput>false</modeThroughput>
+    </hudson.plugins.performance.PerformancePublisher>
+    <hudson.plugins.postbuildtask.PostbuildTask plugin="postbuild-task@1.8">
+      <tasks>
+        <hudson.plugins.postbuildtask.TaskProperties>
+          <logTexts>
+            <hudson.plugins.postbuildtask.LogProperties>
+              <logText>SUCCESS</logText>
+              <operator>AND</operator>
+            </hudson.plugins.postbuildtask.LogProperties>
+          </logTexts>
+          <EscalateStatus>false</EscalateStatus>
+          <RunIfJobSuccessful>false</RunIfJobSuccessful>
+          <script>java -jar /statsd-cli/statsd-cli-1.0-SNAPSHOT.jar  statsd-lab.test.expedia.com 8125 karmalab.integration.air.test.uptime 100</script>
+        </hudson.plugins.postbuildtask.TaskProperties>
+        <hudson.plugins.postbuildtask.TaskProperties>
+          <logTexts>
+            <hudson.plugins.postbuildtask.LogProperties>
+              <logText>FAILURE</logText>
+              <operator>AND</operator>
+            </hudson.plugins.postbuildtask.LogProperties>
+          </logTexts>
+          <EscalateStatus>false</EscalateStatus>
+          <RunIfJobSuccessful>false</RunIfJobSuccessful>
+          <script>java -jar /statsd-cli/statsd-cli-1.0-SNAPSHOT.jar  statsd-lab.test.expedia.com 8125 karmalab.integration.air.test.uptime -100</script>
+        </hudson.plugins.postbuildtask.TaskProperties>
+      </tasks>
+    </hudson.plugins.postbuildtask.PostbuildTask>
+  </publishers>
+  <buildWrappers/>
+</project>

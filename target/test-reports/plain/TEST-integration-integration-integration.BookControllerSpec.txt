@@ -1,0 +1,10 @@
+Testsuite: integration.BookControllerSpec
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.268 sec
+------------- Standard Output ---------------
+--Output from test creating a book--
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+--Output from test creating a book--
+------------- ---------------- ---------------
+
+Testcase: test creating a book took 0.265 sec

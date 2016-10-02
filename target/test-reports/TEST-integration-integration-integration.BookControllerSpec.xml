@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="BELC02R96JRG8WN.sea.corp.expecn.com" name="integration.BookControllerSpec" tests="1" time="0.268" timestamp="2016-09-28T19:31:05">
+  <properties />
+  <testcase classname="integration.BookControllerSpec" name="test creating a book" time="0.265" />
+  <system-out><![CDATA[--Output from test creating a book--
+]]></system-out>
+  <system-err><![CDATA[--Output from test creating a book--
+]]></system-err>
+</testsuite>
